@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🎂 Happy Birthday Sussu Pathak! 🎂</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #2b1a3a 0%, #1a0f2a 100%);
+            font-family: 'Segoe UI', 'Poppins', 'Comic Neue', cursive;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            cursor: pointer;
+        }
+
+        /* Floating hearts animation */
+        .floating-heart {
+            position: fixed;
+            pointer-events: none;
+            font-size: 1.8rem;
+            animation: floatUp 4s ease-out forwards;
+            z-index: 100;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-200px) rotate(20deg);
+                opacity: 0;
+            }
+        }
+
+        /* Main content area */
+        .container {
+            text-align: center;
+            z-index: 20;
+            background: rgba(255, 245, 235, 0.92);
+            backdrop-filter: blur(12px);
+            border-radius: 60px;
+            padding: 40px 30px;
+            max-width: 90%;
+            width: 700px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3), 0 0 0 8px #ffc8a2, 0 0 0 12px #ff6f91;
+            transition: all 0.3s ease;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #ff6b6b, #ffb347, #ff85c1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .click-prompt {
+            background: #ff9a5e;
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 60px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-top: 20px;
+            animation: pulse 1.5s infinite;
+            box-shadow: 0 5px 0 #a24d1a;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Video Player styling */
+        .video-player-wrapper {
+            margin-top: 30px;
+            display: none;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.4);
+        }
+
+        video {
+            width: 100%;
+            max-height: 450px;
+            border-radius: 30px;
+            background: black;
+        }
+
+        .controls-info {
+            margin-top: 15px;
+            color: #3b2a1f;
+            font-weight: 500;
+            background: rgba(255,245,200,0.9);
+            padding: 8px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+        }
+
+        /* Music status */
+        .music-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            padding: 8px 16px;
+            border-radius: 40px;
+            color: #ffdd99;
+            font-size: 0.8rem;
+            z-index: 200;
+            font-family: monospace;
+        }
+
+        /* Click hint */
+        .click-hint {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,215,150,0.95);
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: #5a2e1a;
+            z-index: 200;
+            pointer-events: none;
+            white-space: nowrap;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 550px) {
+            h1 { font-size: 1.8rem; }
+            .click-prompt { font-size: 1rem; padding: 8px 18px; }
+            .click-hint { font-size: 0.7rem; white-space: nowrap; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+    <h1>🎈✨ Happy Birthday ✨🎈</h1>
+    <div style="font-size: 4rem;">🎂🎁🎉</div>
+    <div class="click-prompt" id="clickPrompt">
+        👆 CLICK ANYWHERE 👆
+    </div>
+    <p style="margin-top: 25px; font-size: 1.1rem;">💖 A beautiful surprise is waiting for you! 💖</p>
+    
+    <!-- Video player will appear here -->
+    <div class="video-player-wrapper" id="videoWrapper">
+        <video id="birthdayVideo" controls controlsList="nodownload" style="width: 100%;">
+            Your browser does not support the video tag.
+        </video>
+        <div class="controls-info">
+            🎬 Your special video is playing 🎬 | You can pause/play or adjust volume
+        </div>
+    </div>
+</div>
+
+<div class="music-status" id="musicStatus">
+    🎵 Ready for your surprise...
+</div>
+<div class="click-hint" id="clickHint">
+    ⭐ Click anywhere to start the magic ⭐
+</div>
+
+<script>
+    (function() {
+        // Flag to trigger only once
+        let surpriseTriggered = false;
+        
+        // Video and audio elements
+        let bgMusic = null;
+        let videoElement = document.getElementById('birthdayVideo');
+        let videoWrapper = document.getElementById('videoWrapper');
+        
+        // IMPORTANT: Change this URL to your actual GitHub video URL
+        // If your video is in the same GitHub repo folder, use: "1.mp4"
+        // Otherwise use the full raw GitHub URL
+        const VIDEO_URL = "1.mp4";  // 👈 CHANGE THIS to your video path on GitHub
+        const MUSIC_URL = "bg-music.mp3";  // 👈 OPTIONAL: Add your background music file name or URL
+        
+        // Function to create floating hearts
+        function createFloatingHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('floating-heart');
+            const emojis = ['❤️', '💖', '💗', '💓', '💕', '🎈', '🎂', '✨', '🎉', '🎊', '🌸', '⭐'];
+            heart.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.bottom = '0px';
+            heart.style.fontSize = (Math.random() * 20 + 20) + 'px';
+            document.body.appendChild(heart);
+            setTimeout(() => {
+                if (heart && heart.remove) heart.remove();
+            }, 4000);
+        }
+        
+        // Burst of hearts
+        function burstHearts(count = 30) {
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => createFloatingHeart(), i * 60);
+            }
+        }
+        
+        // Show birthday popup for Sussu Pathak
+        function showBirthdayPopup() {
+            const popupOverlay = document.createElement('div');
+            popupOverlay.style.position = 'fixed';
+            popupOverlay.style.top = '0';
+            popupOverlay.style.left = '0';
+            popupOverlay.style.width = '100%';
+            popupOverlay.style.height = '100%';
+            popupOverlay.style.backgroundColor = 'rgba(0,0,0,0.8)';
+            popupOverlay.style.backdropFilter = 'blur(8px)';
+            popupOverlay.style.zIndex = '9999';
+            popupOverlay.style.display = 'flex';
+            popupOverlay.style.alignItems = 'center';
+            popupOverlay.style.justifyContent = 'center';
+            popupOverlay.style.fontFamily = "'Poppins', 'Comic Neue', cursive";
+            
+            const popupCard = document.createElement('div');
+            popupCard.style.background = 'linear-gradient(135deg, #fff5e6, #ffe0c4)';
+            popupCard.style.borderRadius = '70px';
+            popupCard.style.padding = '40px 50px';
+            popupCard.style.textAlign = 'center';
+            popupCard.style.boxShadow = '0 30px 50px rgba(0,0,0,0.4), 0 0 0 8px #ffb347, 0 0 0 14px #ff69b4';
+            popupCard.style.maxWidth = '90%';
+            popupCard.style.width = '500px';
+            popupCard.style.animation = 'popIn 0.4s cubic-bezier(0.34, 1.2, 0.64, 1)';
+            
+            const title = document.createElement('h2');
+            title.innerHTML = '🎉🎂 HAPPY BIRTHDAY 🎂🎉';
+            title.style.fontSize = '2.2rem';
+            title.style.marginBottom = '15px';
+            title.style.color = '#c43a2b';
+            title.style.fontWeight = 'bold';
+            
+            const nameMsg = document.createElement('div');
+            nameMsg.innerHTML = '<span style="font-size: 3rem;">🎈</span> <strong style="font-size: 2.5rem; background: linear-gradient(45deg,#ff6b6b,#ffb347,#ff85c1); -webkit-background-clip:text; background-clip:text; color:transparent;">SUSSU PATHAK</strong> <span style="font-size: 3rem;">🎈</span>';
+            nameMsg.style.margin = '15px 0';
+            
+            const wishMsg = document.createElement('p');
+            wishMsg.innerHTML = '✨ May your day be filled with endless joy, laughter, and magic! ✨<br>❤️ You are truly special and loved! ❤️<br>🎁 Enjoy your surprise video! 🎁';
+            wishMsg.style.fontSize = '1.2rem';
+            wishMsg.style.margin = '20px 0';
+            wishMsg.style.color = '#5e2e1a';
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '🎬 PLAY YOUR SURPRISE VIDEO 🎬';
+            closeBtn.style.background = '#ff7b42';
+            closeBtn.style.border = 'none';
+            closeBtn.style.padding = '14px 28px';
+            closeBtn.style.fontSize = '1.2rem';
+            closeBtn.style.fontWeight = 'bold';
+            closeBtn.style.borderRadius = '60px';
+            closeBtn.style.color = 'white';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.style.marginTop = '15px';
+            closeBtn.style.boxShadow = '0 5px 0 #a13200';
+            closeBtn.style.transition = '0.1s linear';
+            
+            closeBtn.onmouseover = () => { closeBtn.style.transform = 'translateY(-2px)'; };
+            closeBtn.onmouseout = () => { closeBtn.style.transform = 'translateY(0)'; };
+            closeBtn.onclick = () => {
+                document.body.removeChild(popupOverlay);
+                startVideoAndMusic();
+            };
+            
+            popupCard.appendChild(title);
+            popupCard.appendChild(nameMsg);
+            popupCard.appendChild(wishMsg);
+            popupCard.appendChild(closeBtn);
+            popupOverlay.appendChild(popupCard);
+            
+            // Add keyframe animation
+            if (!document.querySelector('#popupKeyframe')) {
+                const styleSheet = document.createElement('style');
+                styleSheet.id = 'popupKeyframe';
+                styleSheet.textContent = `
+                    @keyframes popIn {
+                        0% { transform: scale(0.7); opacity: 0; }
+                        100% { transform: scale(1); opacity: 1; }
+                    }
+                `;
+                document.head.appendChild(styleSheet);
+            }
+            
+            document.body.appendChild(popupOverlay);
+            burstHearts(40);
+        }
+        
+        // Start video and background music from GitHub files
+        function startVideoAndMusic() {
+            const musicStatusSpan = document.getElementById('musicStatus');
+            
+            // Set video source
+            videoElement.src = VIDEO_URL;
+            videoWrapper.style.display = 'block';
+            
+            // Try to load and play video
+            videoElement.load();
+            videoElement.play().catch(error => {
+                console.log("Video autoplay prevented:", error);
+                musicStatusSpan.innerHTML = '⚠️ Click play on the video to start ⚠️';
+            });
+            
+            // Handle video errors (file not found)
+            videoElement.onerror = () => {
+                musicStatusSpan.innerHTML = '❌ Video file not found! Make sure "1.mp4" is in the same folder as this HTML file on GitHub. ❌';
+                musicStatusSpan.style.background = 'rgba(255,0,0,0.8)';
+            };
+            
+            // Load background music if URL is provided and file exists
+            if (MUSIC_URL && MUSIC_URL !== "bg-music.mp3" || (MUSIC_URL === "bg-music.mp3" && confirm("Do you have a bg-music.mp3 file? If not, click Cancel to skip music"))) {
+                // Only try to load if it's a custom URL or user confirms
+                if (MUSIC_URL !== "bg-music.mp3") {
+                    bgMusic = new Audio(MUSIC_URL);
+                    bgMusic.loop = true;
+                    bgMusic.volume = 0.3;
+                    bgMusic.play().catch(e => {
+                        console.log("Music autoplay blocked:", e);
+                        musicStatusSpan.innerHTML = '🎵 Click video to also start background music 🎵';
+                    });
+                    musicStatusSpan.innerHTML = '🎵 Background music playing 🎵';
+                    musicStatusSpan.style.background = 'rgba(0,0,0,0.7)';
+                } else {
+                    musicStatusSpan.innerHTML = '🎵 No background music added (optional) 🎵';
+                }
+            } else {
+                musicStatusSpan.innerHTML = '🎵 No background music added 🎵';
+            }
+            
+            // Success message when video can play
+            videoElement.oncanplay = () => {
+                musicStatusSpan.innerHTML = musicStatusSpan.innerHTML + ' ✨ Video ready! ✨';
+            };
+        }
+        
+        // MAIN TRIGGER: on ANY click
+        function onPageClick(e) {
+            if (surpriseTriggered) return;
+            surpriseTriggered = true;
+            
+            // Hide click hint
+            const hint = document.getElementById('clickHint');
+            if (hint) hint.style.opacity = '0';
+            
+            // Show birthday popup for Sussu Pathak
+            showBirthdayPopup();
+            
+            // Update main container
+            const clickPromptDiv = document.getElementById('clickPrompt');
+            if (clickPromptDiv) clickPromptDiv.style.display = 'none';
+            
+            // Celebration effects
+            burstHearts(50);
+            
+            // Add some extra sparkle
+            for(let i = 0; i < 20; i++) {
+                setTimeout(() => createFloatingHeart(), i * 80);
+            }
+        }
+        
+        // Attach click listener
+        document.body.addEventListener('click', onPageClick);
+        
+        // Initial floating hearts on load
+        setTimeout(() => {
+            for(let i = 0; i < 15; i++) {
+                setTimeout(() => createFloatingHeart(), i * 100);
+            }
+        }, 500);
+        
+        console.log("🎉 Ready! Make sure '1.mp4' is in the same GitHub folder as this file!");
+        console.log("🎵 Optional: Add 'bg-music.mp3' for background music");
+    })();
+</script>
+</body>
+</html>
